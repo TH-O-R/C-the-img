@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     }
 
     // We used fread() because it's binary data
-    if( fread(pixels, 3, img_h * img_w, image) != img_w*img_h) {
+    if( fread(pixels, 3, img_h * img_w, image) != img_w*img_h ) {
         fprintf(stderr, "Couldn't get the image pixel data...\n");
         return 1;
     } 
@@ -113,10 +113,11 @@ int main(int argc, char *argv[]) {
     //Hack to get window to stay up
     SDL_Event e;
     int quit = 0;
-    while( quit == 0 ) {
+    while(!quit) {
         while( SDL_PollEvent( &e ) ) {
             if( e.type == SDL_QUIT ) quit = 1; 
         } 
+        SDL_Delay(100);
     }
 
     fclose(image);
