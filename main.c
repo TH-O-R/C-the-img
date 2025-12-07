@@ -1,5 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // Skip all comment lines and leading whitespace until a number or other token
 void skip_ppm_comments(FILE *f) {
@@ -24,6 +26,11 @@ void skip_ppm_comments(FILE *f) {
 }
 
 int main(int argc, char *argv[]) {
+
+    if (argc != 2) {
+        fprintf(stderr, "usage: %s path/to/example.ppm\n", argv[0]);
+        return 1;
+    }
     
     FILE* image = fopen(argv[1], "rb");
     if(!image) {
@@ -35,10 +42,20 @@ int main(int argc, char *argv[]) {
     int maxcol;
 
     fscanf(image, "%2s", magic_number);
+    if(strcmp(magic_number, "P6") != 0 ) {
+        fprintf(stderr, "Only supports raw ppm files...\n");
+        return 1;
+    }
     skip_ppm_comments(image);
+
     fscanf(image, "%d %d", &img_w, &img_h);
     skip_ppm_comments(image);
+
     fscanf(image, "%d", &maxcol);
+    if(maxcol != 255) {
+        fprintf(stderr, "Only supports 255 max value color...\n");
+        return 1;
+    }
     fgetc(image); // Skip the WhiteSpace after the maxcol val -- According to the .ppm format this is always a thing
 
     unsigned char *pixels = malloc(img_w * img_h * 3);
@@ -46,7 +63,12 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Failed to malloc() for pixels\n");
         return 1;
     }
-    fread(pixels, 3, img_h * img_w, image); // We used fread() because it's binary data
+
+    // We used fread() because it's binary data
+    if( fread(pixels, 3, img_h * img_w, image) != img_w*img_h) {
+        fprintf(stderr, "Couldn't get the image pixel data...\n");
+        return 1;
+    } 
 
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         fprintf(stderr, "FAILED TO INIT SDL2: %s\n", SDL_GetError());
@@ -69,24 +91,23 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Fill each pixel of the window successivelly
-    SDL_Rect pixel = {0, 0, 1, 1};
-    int idx;
+    // Fill each pixel of the window surface successivelly
+    SDL_LockSurface(winSurface); // Lock the window Surface before editing it's values
+    Uint32 *dst = winSurface->pixels;
+    int idx; // Keep track of what pixel we're on
     Uint8 pixel_r, pixel_g, pixel_b;
     for(int y = 0; y < img_h; y++) {
         for(int x = 0; x < img_w; x++) {
-            idx = (y * img_w + x) * 3;
+            idx = (y * img_w + x) * 3; // A Classic
             pixel_r = pixels[idx];
             pixel_g = pixels[idx+1];
             pixel_b = pixels[idx+2];
 
-            pixel.x = x;
-            pixel.y = y;
-
-            SDL_FillRect(winSurface, &pixel, SDL_MapRGB(winSurface->format, pixel_r, pixel_g, pixel_b));
+            dst[y * winSurface->w + x] = SDL_MapRGB(winSurface->format, pixel_r, pixel_g, pixel_b);
         }
     }
 
+    SDL_UnlockSurface(winSurface);
     SDL_UpdateWindowSurface(win);
 
     //Hack to get window to stay up
