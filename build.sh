@@ -4,4 +4,4 @@
 gcc main.c -o main -lSDL2
 
 # Run
-./main android.ppm
+./main assets/android.ppm
