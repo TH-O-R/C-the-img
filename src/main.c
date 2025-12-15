@@ -85,15 +85,42 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    SDL_Surface *winSurface = SDL_GetWindowSurface(win);
-    if(!winSurface) {
-        fprintf(stderr, "FAILED TO CREATE WINDOW SURFACE: %s\n", SDL_GetError());
+    SDL_Renderer *renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    if(!renderer) {
+        fprintf(stderr, "FAILED TO CREATE RENDERER: %s\n", SDL_GetError());
         return 1;
     }
 
-    // Fill each pixel of the window surface successivelly
-    SDL_LockSurface(winSurface); // Lock the window Surface before editing it's values
-    Uint32 *dst = winSurface->pixels;
+    // Check if hardware acceleration is actually enabled
+    SDL_RendererInfo info;
+    if (SDL_GetRendererInfo(renderer, &info) == 0) {
+        if (info.flags & SDL_RENDERER_ACCELERATED) {
+            printf("Hardware acceleration is enabled\n");
+        } else {
+            printf("Hardware acceleration is not supported\n");
+        }
+    } else {
+        fprintf(stderr, "Failed to get renderer info: %s\n", SDL_GetError());
+    }
+
+    SDL_Texture *texture = SDL_CreateTexture(renderer, 
+                                             SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 
+                                             img_w, img_h);
+    if(!texture) {
+        fprintf(stderr, "FAILED TO CREATE TEXTURE: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // We need to lock the texture because STREAMING
+    void *texture_pixels = NULL;
+    int pitch = 0;
+    if(SDL_LockTexture(texture, NULL, &texture_pixels, &pitch) != 0) {
+        fprintf(stderr, "FAILED TO LOCK TEXTURE: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // Fill each pixel of the texture
+    Uint32 *dst = (Uint32*)texture_pixels;
     int idx; // Keep track of what pixel we're on
     Uint8 pixel_r, pixel_g, pixel_b;
     for(int y = 0; y < img_h; y++) {
@@ -103,12 +130,16 @@ int main(int argc, char *argv[]) {
             pixel_g = pixels[idx+1];
             pixel_b = pixels[idx+2];
 
-            dst[y * winSurface->w + x] = SDL_MapRGB(winSurface->format, pixel_r, pixel_g, pixel_b);
+            dst[y * img_w + x] = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_ARGB8888), pixel_r, pixel_g, pixel_b);
         }
     }
 
-    SDL_UnlockSurface(winSurface);
-    SDL_UpdateWindowSurface(win);
+    SDL_UnlockTexture(texture);
+
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
+    
 
     //Hack to get window to stay up
     SDL_Event e;
