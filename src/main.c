@@ -94,9 +94,7 @@ int main(int argc, char *argv[]) {
     // Check if hardware acceleration is actually enabled
     SDL_RendererInfo info;
     if (SDL_GetRendererInfo(renderer, &info) == 0) {
-        if (info.flags & SDL_RENDERER_ACCELERATED) {
-            printf("Hardware acceleration is enabled\n");
-        } else {
+        if (!(info.flags & SDL_RENDERER_ACCELERATED)) {
             printf("Hardware acceleration is not supported\n");
         }
     } else {
