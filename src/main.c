@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_Texture *texture = SDL_CreateTexture(renderer, 
-                                             SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 
+                                             SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 
                                              img_w, img_h);
     if(!texture) {
         fprintf(stderr, "FAILED TO CREATE TEXTURE: %s\n", SDL_GetError());
@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
             pixel_g = pixels[idx+1];
             pixel_b = pixels[idx+2];
 
-            dst[y * img_w + x] = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_ARGB8888), pixel_r, pixel_g, pixel_b);
+            dst[y * img_w + x] = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGB888), pixel_r, pixel_g, pixel_b);
         }
     }
 
