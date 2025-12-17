@@ -121,14 +121,15 @@ int main(int argc, char *argv[]) {
     Uint32 *dst = (Uint32*)texture_pixels;
     int idx; // Keep track of what pixel we're on
     Uint8 pixel_r, pixel_g, pixel_b;
+    SDL_PixelFormat *fmt = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
     for(int y = 0; y < img_h; y++) {
         for(int x = 0; x < img_w; x++) {
-            idx = (y * img_w + x) * 3; // A Classic
+            idx = (y * img_w + x) * 3; // A Classic -- Turn a two dim array into uni dim
             pixel_r = pixels[idx];
             pixel_g = pixels[idx+1];
             pixel_b = pixels[idx+2];
 
-            dst[y * img_w + x] = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGB888), pixel_r, pixel_g, pixel_b);
+            dst[y * img_w + x] = SDL_MapRGB(fmt, pixel_r, pixel_g, pixel_b);
         }
     }
 
@@ -151,6 +152,8 @@ int main(int argc, char *argv[]) {
 
     fclose(image);
     free(pixels);
+
+    SDL_FreeFormat(fmt);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyTexture(texture);
     SDL_DestroyWindow(win);
