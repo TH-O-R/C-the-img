@@ -154,8 +154,8 @@ int main(int argc, char *argv[]) {
     free(pixels);
 
     SDL_FreeFormat(fmt);
-    SDL_DestroyRenderer(renderer);
     SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(win);
     SDL_Quit();
     return 0;
