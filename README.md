@@ -1,9 +1,9 @@
 # Simple image viewer:
-A simple image viewer that only supports `.ppm` files for now.
+C-the-img (see the image) is a simple image viewer that only supports `binary format .ppm` files for now.
 
 ## Repo structure:
 ```sh
-imageview/
+C-the-img/
 ├── assets/
 │   ├── abstarct.ppm
 │   ├── android.ppm
