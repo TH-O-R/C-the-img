@@ -55,7 +55,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    SDL_Window *win = SDL_CreateWindow("PPM viewer", 
+    char window_name[1024];
+    const char *win_name = window_name;
+    int n = snprintf(window_name, sizeof(window_name), "C the img: %s", argv[1]);
+    if(n < 0 || (size_t)n >= sizeof(window_name)) {
+        fprintf(stderr, "Failed to create complete window title...\n");
+        win_name = "C the img";
+    }
+    SDL_Window *win = SDL_CreateWindow(win_name, 
                                        SDL_WINDOWPOS_CENTERED,  // X pos
                                        SDL_WINDOWPOS_CENTERED,  // Y pos
                                        img_w, img_h,
