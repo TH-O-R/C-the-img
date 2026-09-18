@@ -2,7 +2,7 @@
 CC = gcc
 
 # Source files
-SRC = src/main.c
+SRC = src/main.c src/utils.c
 
 # Output binary
 OUT = bin/main
