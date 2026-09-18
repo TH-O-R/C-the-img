@@ -21,6 +21,14 @@ C-the-img/
     └── utils.h
 ```
 
+## Dependencies:
+
+- SDL2 development libraries (`-lSDL2`)
+  - Debian/Ubuntu: `sudo apt install libsdl2-dev`
+  - Fedora: `sudo dnf install SDL2-devel`
+  - Arch: `sudo pacman -S sdl2`
+  - macOS: `brew install sdl2`
+
 ## Building/Running:
 
 - `make` compile the program
