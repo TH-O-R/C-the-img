@@ -6,19 +6,19 @@ C-the-img (see the image) is a simple image viewer that only supports `binary fo
 ## Repo structure:
 
 ```sh
- C-the-img
-├──  assets
-│   ├──  abstarct.ppm
-│   ├──  android.ppm
-│   ├──  c-the-img_demo.png
-│   └──  Clang.ppm
-├──  LICENSE
-├──  Makefile
-├──  README.md
-└── 󱧼 src
-    ├──  main.c
-    ├──  utils.c
-    └──  utils.h
+C-the-img/
+├── assets
+│   ├── abstarct.ppm
+│   ├── android.ppm
+│   ├── Clang.ppm
+│   └── c-the-img_demo.png
+├── LICENSE
+├── Makefile
+├── README.md
+└── src
+    ├── main.c
+    ├── utils.c
+    └── utils.h
 ```
 
 ## Building/Running:
